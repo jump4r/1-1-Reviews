@@ -1,0 +1,39 @@
+$font-stack: Roboto, sans-serif;
+$primary-color: white;
+$bg-color: #222;
+
+html, body {
+    margin: 0;
+    font-family: $font-stack;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+
+.header {
+    color: $primary-color;
+    background-color: $bg-color;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.header-links {
+    text-align: right;
+    display: inline-flex;
+    position: relative;
+    top: 50%;
+}
+
+.header-title {
+    font-size: 50px;
+}
+
+.header-element {
+    margin: 20px;
+    font-size: 25px;
+}
+

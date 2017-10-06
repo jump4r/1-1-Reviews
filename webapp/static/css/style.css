@@ -1,0 +1,29 @@
+html, body {
+  margin: 0;
+  font-family: Roboto, sans-serif; }
+
+a {
+  color: white;
+  text-decoration: none; }
+
+.header {
+  color: white;
+  background-color: #222;
+  width: 100%;
+  padding: 20px 0;
+  text-align: center; }
+
+.header-links {
+  text-align: right;
+  display: inline-flex;
+  position: relative;
+  top: 50%; }
+
+.header-title {
+  font-size: 50px; }
+
+.header-element {
+  margin: 20px;
+  font-size: 25px; }
+
+/*# sourceMappingURL=style.css.map */
