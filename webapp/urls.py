@@ -1,4 +1,4 @@
 from django.conf.urls import url
-from . import views
+from webapp.views import AppView
 
-urlpatterns = [url(r'^$', views.index, name='index')]
+urlpatterns = [url(r'^$', AppView.as_view())]

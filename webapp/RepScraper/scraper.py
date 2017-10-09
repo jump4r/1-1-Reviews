@@ -1,27 +1,38 @@
 from pprint import pprint
-import parse
+import os, sys, time
+import django
+sys.path.append('\\'.join([os.path.dirname(os.path.abspath(__file__)), '..\\..']))
+sys.path.append('\\'.join([os.path.dirname(os.path.abspath(__file__)), '..']))
+from RepReviews import settings
+
+import parse, config, keywords
 import praw
-import config
-import keywords
 import sqlite3
-import os
-from review import Review
-from post import Post
-import subprocess
 
 def login():
     r = praw.Reddit(username=config.username,
                 password=config.password,
                 client_id = config.client_id,
                 client_secret = config.client_secret,
-                user_agent = "WebApp:com.jump4r.1-1Reviews:v0.1.0 by (/u/jump4r")
+                user_agent = "WebApp:com.jump4r.1-1Reviews:v0.1.0 by (/u/jump4r)")
     print ("logged in")
     return r
 
 def get_reviews(reddit):
     posts = []
-    for post in reddit.subreddit("jump4r").hot(limit=2):
+    for post in reddit.subreddit("jump4r").hot(limit=10):
         if "[review]" in post.title.lower():
+            
+            try:
+                p_exists = Post.objects.get(id=post.id)
+                continue
+            except Post.DoesNotExist:
+                pass
+
+            p = Post(user=post.author.name, date=post.created, link=post.url, id=post.id, title=post.title)
+            p.save()
+            
+            pprint(('Post: ' + str(p)))
             split_selftext = post.selftext.split('\n')
             index, review_start_index, review_end_index = 0, -1, -1
 
@@ -35,13 +46,10 @@ def get_reviews(reddit):
             if (review_start_index == -1 or review_end_index == -1):
                 return []
 
-            r = parse.parse_review(split_selftext[review_start_index:review_end_index+1], post.author.name, post.created)
-            
-            if (r):
-                p = Post(post.author.name, r, post.created, post.url, post.id)
-                pprint((p.user, p.date, p.link, p.id))
-                posts.append(p)
-
+            r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
+            for r in r_list:
+                r.save()
+        
     return posts
 
 def scrape_reddit():
@@ -50,7 +58,7 @@ def scrape_reddit():
 
 
 def update_database(posts):
-    path = '\\'.join([os.path.dirname(__file__), 'replist.db'])
+    path = '\\'.join([os.path.dirname(os.path.abspath(__file__)), 'replist.db'])
     print(path)
     conn = sqlite3.connect(path)
     c = conn.cursor()
@@ -66,8 +74,18 @@ def update_database(posts):
     c.close()
     conn.close()
 
-#reddit_posts = scrape_reddit()
-#update_database(reddit_posts)
-#print('calling streamer')
-#process = subprocess.Popen(['python', 'streamer.py'])
-#print("finished")
+
+if __name__ == "__main__":
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'RepReviews.settings')
+    django.setup()
+    try:
+        from webapp.models import Post, Review
+        reddit_posts = scrape_reddit()
+
+    except django.core.exceptions.AppRegistryNotReady:
+        print('Cannot Load Models because the models are not ready')
+
+    #update_database(reddit_posts)
+    #print('calling streamer')
+    #process = subprocess.Popen(['python', 'streamer.py'])
+    #print("finished")

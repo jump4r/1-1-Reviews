@@ -7,6 +7,8 @@ class WebappConfig(AppConfig):
     verbose_name = "1:1 Rep Aggregator"
     def ready(self):
         print('Starting Streamer (From WebappConfig)')
-        streamer_path = '\\'.join([os.path.dirname(os.path.abspath(__file__)), 'RepScraper', 'streamer.py'])
+        scraper_path = '\\'.join([os.path.dirname(os.path.abspath(__file__)), 'RepScraper', 'scraper.py'])
 
-        subprocess.Popen(['python', streamer_path]) 
+        #print(check_to_run.checkint)
+        #subprocess.Popen(['python', scraper_path]) 
+        
