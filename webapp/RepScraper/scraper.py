@@ -7,7 +7,6 @@ from RepReviews import settings
 
 import parse, config, keywords
 import praw
-import sqlite3
 
 def login():
     r = praw.Reddit(username=config.username,
@@ -19,6 +18,12 @@ def login():
     return r
 
 def get_reviews(reddit):
+    try:
+        from webapp.models import Post, Review
+    except django.core.exceptions.AppRegistryNotReady:
+        print('Cannot Load Models because the models are not ready')
+        return False
+
     posts = []
     for post in reddit.subreddit("jump4r").hot(limit=10):
         if "[review]" in post.title.lower():
@@ -48,31 +53,14 @@ def get_reviews(reddit):
 
             r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
             for r in r_list:
-                r.save()
+                p.review_set.create(user=r.user, date=r.date, itemName=r.itemName, itemLink=r.itemLink, itemReview=r.itemReview, itemSize=r.itemSize)
         
     return posts
 
 def scrape_reddit():
+    
     reddit = login()
     return (get_reviews(reddit))
-
-
-def update_database(posts):
-    path = '\\'.join([os.path.dirname(os.path.abspath(__file__)), 'replist.db'])
-    print(path)
-    conn = sqlite3.connect(path)
-    c = conn.cursor()
-
-    for post in posts:
-        c.execute("INSERT INTO posts (user, date, link, uID) VALUES (?, ?, ?, ?)", (post.user, post.date, post.link, post.id))
-
-        for review in post.reviews:
-            c.execute("INSERT INTO reviews (user, date, itemName, itemLink, itemReview, uID, itemSize) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     (post.user, post.date, review.name, review.link, review.review, review.postId, review.size))
-
-    conn.commit()
-    c.close()
-    conn.close()
 
 
 if __name__ == "__main__":

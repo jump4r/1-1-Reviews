@@ -1,11 +1,38 @@
 {% block second %}
     {% for p in posts %}
         <div class='post'>
-            <p>{{p.user}}</p>
-            <p>{{p.date}}</p>
-            <p>{{p.link}}</p>
-            <p>{{p.id}}</p>
-            <p>Reviews:</p>
+            <div class='post-meta-wrapper'>
+                <div class='post-title'>
+                    <p>{{p.title}}</p>
+                </div><div class='post-meta'>
+                    <p class='post-meta-element'>Author: <a href="http://www.reddit.com/user/{{p.user}}/">{{p.user}}</a></p>
+                    <p class='post-meta-element'>Posted On: {{p.date}}</p>
+                    <p class='post-meta-element'>
+                        <a href="{{p.link}}">Reddit Link</a>
+                    </p>
+                    <p class='post-meta-element'>
+                        <a class='toggle' href="#">Show/Hide List</a>
+                    </p>
+                </div>
+            </div>
+            <div class='post-reviews'>
+                <table id='review-table'>
+                    <tr id='table-header'>
+                        <th class='item-name'>Item Name</th>
+                        <th class='item-link'>Item Link</th>
+                        <th class='item-size'>Item Size</th>
+                        <th class='item-review'>Item Review</th>
+                    </tr>
+                    {% for r in p.review_set.all %}
+                    <tr>
+                        <td class='item-name'>{{r.itemName}}</td>
+                        <td class='item-link'><a href="{{r.itemLink}}">{{r.itemLink}}</a></td>
+                        <td class='item-size'>{{r.itemSize}}</td>
+                        <td class='item-review'>{{r.itemReview}}</td>
+                    </tr> 
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     {% endfor %}
 {% endblock%}

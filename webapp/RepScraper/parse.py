@@ -1,13 +1,15 @@
 from pprint import pprint
 
 import keywords
+import re
 
 def parse_reddit_link(reddit_link):
-    rtn = reddit_link[reddit_link.find('(')+1:reddit_link.find(')')]
-    if (reddit_link == rtn):
-        return null
-    else:
+    try:
+        rtn = re.search(r'\[link\]\((.*?)\)', reddit_link).group(1)
+        print(rtn)
         return rtn
+    except:
+        return reddit_link
 
 def parse_review(split_review, post):
     from webapp.models import Review
@@ -26,6 +28,7 @@ def parse_review(split_review, post):
             for keyword_set in keywords.header_keywords:
                 if (label.lower().strip() in keyword_set):
                     ordered_header[keyword_set[0]] = index
+                    print('Match ' + label + ' with ' + keyword_set[0])
         break
 
     #Parse Body
@@ -41,7 +44,9 @@ def parse_review(split_review, post):
         item_link = split_review[ordered_header["w2c"]] if ((ordered_header["w2c"]) != -1) else 'None Given' 
         item_review = split_review[ordered_header["review"]] if ((ordered_header["review"]) != -1) else 'None Given'
 
-        r = Review(post=post, user=post.user, date=post.date, itemName=item_name, itemLink=item_link, itemSize=item_size)
+        item_link = parse_reddit_link(item_link)
+
+        r = Review(post=post, user=post.user, date=post.date, itemName=item_name, itemLink=item_link, itemReview=item_review, itemSize=item_size)
         item_reviews.append(r)
 
     return item_reviews

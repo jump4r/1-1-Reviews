@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-import os
+import os, sys
 import subprocess
 
 class WebappConfig(AppConfig):
@@ -7,8 +7,11 @@ class WebappConfig(AppConfig):
     verbose_name = "1:1 Rep Aggregator"
     def ready(self):
         print('Starting Streamer (From WebappConfig)')
+        
         scraper_path = '\\'.join([os.path.dirname(os.path.abspath(__file__)), 'RepScraper', 'scraper.py'])
+        sys.path.append('\\'.join([os.path.dirname(os.path.abspath(__file__)), 'RepScraper']))
+        from streamer import Streamer
 
-        #print(check_to_run.checkint)
-        #subprocess.Popen(['python', scraper_path]) 
+        s = Streamer()
+        #s.stream()
         

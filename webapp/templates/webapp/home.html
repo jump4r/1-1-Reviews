@@ -1,6 +1,10 @@
 {% extends "webapp/header.html" %}
 
 {% block content %}
-    <h1>Hello World 2: Return of the World</h1>
-    {% include "webapp/includes/app.html" %}
+    <div id='app-wrapper'>
+        <div id='app'>
+            <h1 id='app-title'>Post List</h1>
+            {% include "webapp/includes/app.html" %}
+        </div>
+    </div>
 {% endblock %}

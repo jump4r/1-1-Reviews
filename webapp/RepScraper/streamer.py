@@ -1,6 +1,6 @@
 from pprint import pprint
 import django
-import sys, os
+import sys, os, time
 sys.path.append('\\'.join([os.path.dirname(os.path.abspath(__file__)), '..\\..']))
 sys.path.append('\\'.join([os.path.dirname(os.path.abspath(__file__)), '..']))
 import parse, config, keywords
@@ -9,6 +9,11 @@ import threading
 
 class Streamer:
     running = False
+
+    def stream(self):
+        r = self.login()
+        thread = threading.Thread(target=self.get_from_stream, args=(r, ))
+        thread.start()
 
     def login(self):
         pprint('logging in')
@@ -21,7 +26,7 @@ class Streamer:
         running = True
         return r
 
-    def stream_from_reddit(self, reddit):
+    def get_from_stream(self, reddit):
         pprint('starting stream')
         subreddit = reddit.subreddit('jump4r')
         for submission in subreddit.stream.submissions():
@@ -30,10 +35,16 @@ class Streamer:
 
     def process_submission(self, post):
         print('Post Recieved')
-        if "[review]" in post.title.lower():
 
+        try:
+            from webapp.models import Post, Review
+        except django.core.exceptions.AppRegistryNotReady:
+            return False
+
+        if "[review]" in post.title.lower():
             try:
                 p_exists = Post.objects.get(id=post.id)
+                print('Post in Database')
                 return False
             except Post.DoesNotExist:
                 pass
@@ -55,7 +66,7 @@ class Streamer:
             if (review_start_index == -1 or review_end_index == -1):
                 return []
 
-            r = parse.parse_review(split_selftext[review_start_index:review_end_index+1], post.author.name, post.created)
+            r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
             for r in r_list:
                 r.save()
 
@@ -68,7 +79,7 @@ if __name__ == "__main__":
         from webapp.models import Post, Review
         streamer = Streamer()
         reddit = streamer.login()
-        stream_thread = threading.Thread(target=streamer.stream_from_reddit, args=(reddit, ))
+        stream_thread = threading.Thread(target=streamer.get_from_stream, args=(reddit, ))
         stream_thread.start()
         
     except django.core.exceptions.AppRegistryNotReady:
