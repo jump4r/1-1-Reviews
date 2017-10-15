@@ -1,37 +1,31 @@
 {% block second %}
-    {% for p in posts %}
-        <div class='post'>
-            <div class='post-meta-wrapper'>
-                <div class='post-title'>
-                    <p>{{p.title}}</p>
-                </div><div class='post-meta'>
-                    <p class='post-meta-element'>Author: <a href="http://www.reddit.com/user/{{p.user}}/">{{p.user}}</a></p>
-                    <p class='post-meta-element'>Posted On: {{p.date}}</p>
-                    <p class='post-meta-element'>
-                        <a href="{{p.link}}">Reddit Link</a>
+    {% for r in reviews %}
+        <div class='review-wrapper'>
+            <div class='review-image-wrapper'>
+                <img class='review-image' src='{{ r.itemPic }}'>
+            </div>
+            <div class='review-text-wrapper'>
+                <div class='review-item-title'>
+                    <p>{{ r.itemName}}</p>
+                </div>
+                <div class='review-meta'>
+                    <p class='review-meta-element'>By:
+                        <a href='https://www.reddit.com/user/{{ p.user }}'>{{ r.post.user }}</a>
                     </p>
-                    <p class='post-meta-element'>
-                        <a class='toggle' href="#">Show/Hide List</a>
+                    <p class='review-meta-element'>Posted: {{ r.post.date }}</p>
+                    <p class='review-meta-element'>
+                        <a href='{{p.link}}'>Reddit</a>
                     </p>
                 </div>
-            </div>
-            <div class='post-reviews'>
-                <table id='review-table'>
-                    <tr id='table-header'>
-                        <th class='item-name'>Item Name</th>
-                        <th class='item-link'>Item Link</th>
-                        <th class='item-size'>Item Size</th>
-                        <th class='item-review'>Item Review</th>
-                    </tr>
-                    {% for r in p.review_set.all %}
-                    <tr>
-                        <td class='item-name'>{{r.itemName}}</td>
-                        <td class='item-link'><a href="{{r.itemLink}}">{{r.itemLink}}</a></td>
-                        <td class='item-size'>{{r.itemSize}}</td>
-                        <td class='item-review'>{{r.itemReview}}</td>
-                    </tr> 
-                    {% endfor %}
-                </table>
+                <div class='review-info'>
+                    <p class='review-info-element item-link'>
+                        <a href='{{r.itemLink}}'>W2C</a>
+                    </p>
+                    <p class='review-info-element item-size'>Size: {{ r.itemSize }}</p>
+                </div>
+                <div class='review-content'>
+                    <p>{{ r.itemReview }}</p>
+                </div>
             </div>
         </div>
     {% endfor %}

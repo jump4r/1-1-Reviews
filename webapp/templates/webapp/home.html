@@ -1,10 +1,28 @@
 {% extends "webapp/header.html" %}
 
 {% block content %}
+    <div id='filter-wrapper'>
+        <p id='filter-title'>
+            Show Filter
+        </p>   
+        <form method='POST' id='filter-form'>
+            {% csrf_token %}
+            <div class='filter-field-wrapper'>
+                <div class='filter-field'> User: {{ filter.user }} </div>
+                <div class='filter-field'> Item: {{ filter.itemName }} </div>
+            </div>
+            <div id='filter-submit-wrapper'>
+                <button type='submit' id='filter-submit'>Submit</button>
+            </div>
+            
+        </form>
+    </div>
     <div id='app-wrapper'>
         <div id='app'>
             <h1 id='app-title'>Post List</h1>
-            {% include "webapp/includes/app.html" %}
+            <div id='review-list-wrapper'>
+                {% include "webapp/includes/app.html" %}
+            </div>
         </div>
     </div>
 {% endblock %}

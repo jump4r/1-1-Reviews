@@ -20,6 +20,7 @@ class Review(models.Model):
     itemLink = models.CharField(max_length=50)
     itemReview = models.CharField(max_length=250)
     itemSize = models.CharField(max_length=32)
+    itemPic = models.CharField(max_length=75)
 
     def __str__(self):
         return self.itemName + ', by ' + self.user

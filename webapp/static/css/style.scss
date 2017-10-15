@@ -1,6 +1,9 @@
 $font-stack: Roboto, sans-serif;
 $primary-color: white;
+$accent-color: #ff9681;
 $bg-color: #222;
+
+$img-size: 300px;
 
 html, body {
     margin: 0;
@@ -8,7 +11,8 @@ html, body {
 }
 
 p {
-    margin: 5px;
+    padding: 5px;
+    margin: 0;
 }
 
 
@@ -41,71 +45,80 @@ p {
     font-size: 25px;
 }
 
+#filter-wrapper {
+    color: $primary-color;
+    background-color: $accent-color;
+}
+
+#filter-form {
+    display: none;
+}
+
+#filter-title {
+    text-align: center;
+    font-size: 2.35em;
+}
+
+.filter-field-wrapper {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.filter-field {
+    display: inline-block;
+    margin: 0;
+    padding: 5px;
+}
+
+#filter-submit-wrapper {
+    text-align: center;
+    padding: 15px;
+}
+
 #app-wrapper {
     width: 100%;
 }
 
-#app {
-    width: 75%;
+#review-list-wrapper {
+    width: 90%;
     margin: 0 auto;
 }
 
-#app-title {
-    text-align: center;
-}
-
-.post {
-    border: 1px solid #222;
-    margin: 10px 0
-}
-
-.post-meta-wrapper {
-    width: 100%;
-    vertical-align: top;
-    
-}
-
-.post-meta, .post-title {
-    display: block;
-    vertical-align: top;
-    height: 100%;
-}
-
-.post-title {
-    font-size: 2em;
-}
-
-.post-meta-element {
+.review-wrapper {
     display: inline-block;
-}
+    vertical-align: top;
+    padding: 5px;
+    max-width: 30%;
 
-table {
-    width: 100%;
-    // display: none; // For dropdown
-}
+    .review-image-wrapper {
+        background-color: gray;
+        
+        .review-image {
+            width: $img-size;
+            height: $img-size;
+            object-fit: cover;
+        }
+    }
 
-td {
-    text-align: center;
-}
+    .review-text-wrapper {
+        max-width: $img-size;
+        border-bottom: 1px solid gray;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+    }
 
-tbody { // Not working idk why
-    tr:not(last-child){
-        border-bottom: 1px solid #222;
-   }
-}
+    .review-item-title {
+        text-align: center;
+        font-size: 1.5em;
+    }
 
-.item-name {
-    width: 15%;
-}
+    .review-meta > * {
+        display: inline-block;
+        font-size: 0.75em;
+    }
 
-.item-link {
-    width: 30%
-}
+    .review-info > * {
+        display: inline-block;
+    }
 
-.item-size {
-    width: 5%;
-}
-
-.item-review {
-    width: 50%;
 }

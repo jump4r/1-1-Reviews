@@ -25,9 +25,9 @@ def get_reviews(reddit):
         return False
 
     posts = []
-    for post in reddit.subreddit("jump4r").hot(limit=10):
+    for post in reddit.subreddit("fashionreps").hot(limit=15):
+        print(post.title)
         if "[review]" in post.title.lower():
-            
             try:
                 p_exists = Post.objects.get(id=post.id)
                 continue
@@ -53,7 +53,7 @@ def get_reviews(reddit):
 
             r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
             for r in r_list:
-                p.review_set.create(user=r.user, date=r.date, itemName=r.itemName, itemLink=r.itemLink, itemReview=r.itemReview, itemSize=r.itemSize)
+                p.review_set.create(user=r.user, date=r.date, itemName=r.itemName, itemLink=r.itemLink, itemReview=r.itemReview, itemSize=r.itemSize, itemPic=r.itemPic)
         
     return posts
 

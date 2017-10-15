@@ -1,22 +1,26 @@
 from pprint import pprint
-
+import datetime, re
 import keywords
-import re
 
 def parse_reddit_link(reddit_link):
     try:
-        rtn = re.search(r'\[link\]\((.*?)\)', reddit_link).group(1)
-        print(rtn)
+        rtn = re.search(r'\]\((.*?)\)', reddit_link).group(1)
         return rtn
     except:
         return reddit_link
+
+def parse_date(timestamp):
+    months = ['Janurary', 'Februrary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    date = datetime.datetime.fromtimestamp(timestamp)
+    return '%s %d, %d' % (months[date.month-1], date.day, date.year)
 
 def parse_review(split_review, post):
     from webapp.models import Review
 
     # Parse Header
-    ordered_header = {"item": -1, "size": -1, "w2c": -1, "review": -1}
+    ordered_header = {"item": -1, "size": -1, "w2c": -1, "review": -1, "pic": -1 }
     review_start_index = -1
+    total_columns = 0
 
     for row_num, raw_post_row in enumerate(split_review):
         split_post_row = raw_post_row.lower().split('|')
@@ -24,6 +28,7 @@ def parse_review(split_review, post):
             continue
 
         row_start_index = row_num
+        total_columns = len(split_post_row) # Because people are gonna separate their shit weird
         for index, label in enumerate(split_post_row):
             for keyword_set in keywords.header_keywords:
                 if (label.lower().strip() in keyword_set):
@@ -38,15 +43,29 @@ def parse_review(split_review, post):
     body = split_review[row_start_index+2:len(split_review)]
     item_reviews = []
     for review in body:
+
         split_review = review.split('|')
-        item_name = split_review[ordered_header["item"]] if ((ordered_header["item"]) != -1) else 'None Given'
-        item_size = split_review[ordered_header["size"]] if ((ordered_header["size"]) != -1) else 'N/A'
-        item_link = split_review[ordered_header["w2c"]] if ((ordered_header["w2c"]) != -1) else 'None Given' 
-        item_review = split_review[ordered_header["review"]] if ((ordered_header["review"]) != -1) else 'None Given'
+
+        if (total_columns != len(split_review)):
+            continue
+
+        item_name, item_size, item_link, item_review, item_pic = "None Given", "None Given", "N/A", "None Given", "http://via.placehold.com/250x250"
+
+        if ordered_header["item"] != -1:
+            item_name = split_review[ordered_header["item"]]
+        if ordered_header["size"] != -1:
+            item_size = split_review[ordered_header["size"]]
+        if ordered_header["w2c"] != -1:
+            item_link = split_review[ordered_header["w2c"]]
+        if ordered_header["review"] != -1:
+            item_review = split_review[ordered_header["review"]]
+        if ordered_header["pic"] != -1:
+            item_pic = split_review[ordered_header["pic"]]
 
         item_link = parse_reddit_link(item_link)
+        item_pic = parse_reddit_link(item_pic)
 
-        r = Review(post=post, user=post.user, date=post.date, itemName=item_name, itemLink=item_link, itemReview=item_review, itemSize=item_size)
+        r = Review(post=post, user=post.user, date=post.date, itemName=item_name, itemLink=item_link, itemReview=item_review, itemSize=item_size, itemPic=item_pic)
         item_reviews.append(r)
 
     return item_reviews
