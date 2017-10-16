@@ -88,15 +88,26 @@ p {
     display: inline-block;
     vertical-align: top;
     padding: 5px;
-    max-width: 30%;
+    max-width: $img-size;
 
     .review-image-wrapper {
         background-color: gray;
+        max-height: $img-size;
         
         .review-image {
             width: $img-size;
             height: $img-size;
             object-fit: cover;
+        }
+
+        .bookmark-icon {
+            width: 32px;
+            height: 32px;
+            z-index: 1;
+            position: relative;
+            bottom: 295px;
+            left: 260px;
+            overflow: hidden;
         }
     }
 

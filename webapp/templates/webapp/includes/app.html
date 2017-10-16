@@ -1,12 +1,14 @@
+{% load staticfiles %}
 {% block second %}
     {% for r in reviews %}
-        <div class='review-wrapper'>
+        <div id='{{ r.id }}' class='review-wrapper'>
             <div class='review-image-wrapper'>
                 <img class='review-image' src='{{ r.itemPic }}'>
+                <img class='bookmark-icon' src="{% static 'icons/heartempty.png' %}">
             </div>
             <div class='review-text-wrapper'>
                 <div class='review-item-title'>
-                    <p>{{ r.itemName}}</p>
+                    <p>{{ r.itemName }}</p>
                 </div>
                 <div class='review-meta'>
                     <p class='review-meta-element'>By:

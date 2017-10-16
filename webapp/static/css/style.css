@@ -65,13 +65,22 @@ p {
   display: inline-block;
   vertical-align: top;
   padding: 5px;
-  max-width: 30%; }
+  max-width: 300px; }
   .review-wrapper .review-image-wrapper {
-    background-color: gray; }
+    background-color: gray;
+    max-height: 300px; }
     .review-wrapper .review-image-wrapper .review-image {
       width: 300px;
       height: 300px;
       object-fit: cover; }
+    .review-wrapper .review-image-wrapper .bookmark-icon {
+      width: 32px;
+      height: 32px;
+      z-index: 1;
+      position: relative;
+      bottom: 295px;
+      left: 260px;
+      overflow: hidden; }
   .review-wrapper .review-text-wrapper {
     max-width: 300px;
     border-bottom: 1px solid gray;
