@@ -24,43 +24,53 @@ def get_reviews(reddit):
         print('Cannot Load Models because the models are not ready')
         return False
 
-    posts = []
     for post in reddit.subreddit("fashionreps").hot(limit=15):
         print(post.title)
-        if "[review]" in post.title.lower():
-            try:
-                p_exists = Post.objects.get(id=post.id)
-                continue
-            except Post.DoesNotExist:
-                pass
+        scrape_post(post)
 
-            p = Post(user=post.author.name, date=post.created, link=post.url, id=post.id, title=post.title)
-            p.save()
-            
-            pprint(('Post: ' + str(p)))
-            split_selftext = post.selftext.split('\n')
-            index, review_start_index, review_end_index = 0, -1, -1
+def get_reviews_from_post(reddit, post_id):
+    post = praw.models.Submission(reddit, post_id)
+    print (post.title)
+    scrape_post(post)
 
-            while (index < len(split_selftext)):
-                if (review_start_index == review_end_index and "|" in split_selftext[index]):
-                    review_start_index = index
-                elif (review_start_index != review_end_index and "|" in split_selftext[index]):
-                    review_end_index = index
-                index += 1
+def scrape_post(post):
+    if "[review]" in post.title.lower():
+        print("Run Scraper")
+        try:
+            p_exists = Post.objects.get(id=post.id)
+            return
+        except Post.DoesNotExist:
+            pass
 
-            if (review_start_index == -1 or review_end_index == -1):
-                return []
-
-            r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
-            for r in r_list:
-                p.review_set.create(user=r.user, date=r.date, itemName=r.itemName, itemLink=r.itemLink, itemReview=r.itemReview, itemSize=r.itemSize, itemPic=r.itemPic)
+        p = Post(user=post.author.name, date=parse.parse_date(post.created), link=post.url, id=post.id, title=post.title)
+        p.save()
         
-    return posts
+        pprint(('Post: ' + str(p)))
+        split_selftext = post.selftext.split('\n')
+        index, review_start_index, review_end_index = 0, -1, -1
 
-def scrape_reddit():
-    
+        while (index < len(split_selftext)):
+            if (review_start_index == review_end_index and "|" in split_selftext[index]):
+                review_start_index = index
+            elif (review_start_index != review_end_index and "|" in split_selftext[index]):
+                review_end_index = index
+            index += 1
+
+        if (review_start_index == -1 or review_end_index == -1):
+            return []
+
+        r_list = parse.parse_review(split_selftext[review_start_index:review_end_index+1], p)
+        for r in r_list:
+            p.review_set.create(user=r.user, date=post.created, itemName=r.itemName, itemLink=r.itemLink, itemReview=r.itemReview, itemSize=r.itemSize, itemPic=r.itemPic)
+
+
+def scrape_reddit():    
     reddit = login()
     return (get_reviews(reddit))
+
+def scrape_reddit_post(post_id):
+    reddit = login()
+    return (get_reviews_from_post(reddit, post_id))
 
 
 if __name__ == "__main__":
@@ -68,7 +78,11 @@ if __name__ == "__main__":
     django.setup()
     try:
         from webapp.models import Post, Review
-        reddit_posts = scrape_reddit()
+        if (sys.argv[1] == None):
+            reddit_posts = scrape_reddit()
+
+        elif (sys.argv[1] != None):
+            reddit_posts = scrape_reddit_post(sys.argv[1])
 
     except django.core.exceptions.AppRegistryNotReady:
         print('Cannot Load Models because the models are not ready')

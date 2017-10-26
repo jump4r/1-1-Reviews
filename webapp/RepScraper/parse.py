@@ -1,13 +1,27 @@
 from pprint import pprint
 import datetime, re
 import keywords
+import urllib.request
 
 def parse_reddit_link(reddit_link):
+    rtn = "#"
     try:
         rtn = re.search(r'\]\((.*?)\)', reddit_link).group(1)
-        return rtn
+        # rtn = re.search(r'\((.*?)\)', reddit_link).group(1)
     except:
+        return rtn
+
+    return rtn
+"""
+    try:
+        text = urllib.request.urlopen(rtn).read()
+        print(text)
+        return rtn
+    except urllib.error.HTTPError:
+        print("Link dead asf lmao")
         return reddit_link
+"""
+
 
 def parse_date(timestamp):
     months = ['Janurary', 'Februrary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -29,8 +43,9 @@ def parse_review(split_review, post):
 
         row_start_index = row_num
         total_columns = len(split_post_row) # Because people are gonna separate their shit weird
-        for index, label in enumerate(split_post_row):
+        for index, label in enumerate   (split_post_row):
             for keyword_set in keywords.header_keywords:
+                # pprint ((label, " - ", keyword_set))
                 if (label.lower().strip() in keyword_set):
                     ordered_header[keyword_set[0]] = index
                     print('Match ' + label + ' with ' + keyword_set[0])
@@ -40,16 +55,22 @@ def parse_review(split_review, post):
     if (len(split_review) < 2):
         return False # No Values
 
+    
     body = split_review[row_start_index+2:len(split_review)]
+    print('Amount of Reviews In Total: ' + str(len(body)))
+
+    # pprint(body)
     item_reviews = []
     for review in body:
 
         split_review = review.split('|')
 
+        print("This sections column length" + str(len(split_review)))
+        
         if (total_columns != len(split_review)):
             continue
 
-        item_name, item_size, item_link, item_review, item_pic = "None Given", "None Given", "N/A", "None Given", "http://via.placehold.com/250x250"
+        item_name, item_size, item_link, item_review, item_pic = "None Given", "None Given", "#", "None Given", "http://via.placeholder.com/250x250"
 
         if ordered_header["item"] != -1:
             item_name = split_review[ordered_header["item"]]
@@ -65,6 +86,7 @@ def parse_review(split_review, post):
         item_link = parse_reddit_link(item_link)
         item_pic = parse_reddit_link(item_pic)
 
+        print (item_name + " + " +  item_link + "Number of sections on this specific Review: " + str(len(split_review)))
         r = Review(post=post, user=post.user, date=post.date, itemName=item_name, itemLink=item_link, itemReview=item_review, itemSize=item_size, itemPic=item_pic)
         item_reviews.append(r)
 

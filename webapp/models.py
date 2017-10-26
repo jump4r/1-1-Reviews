@@ -4,7 +4,7 @@ from django.db import models
 
 class Post(models.Model):
     user = models.CharField(max_length=32)
-    date = models.IntegerField()
+    date = models.CharField(max_length=30)
     link = models.CharField(max_length=50)
     id = models.CharField(max_length=20, primary_key=True)
     title = models.CharField(max_length=100)
